@@ -1,0 +1,71 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_CREDENTIALS = 'docker-cred'
+        SONAR_TOKEN = 'sonar-token'
+        ARGOCD_CREDENTIALS = 'argocd-cred'
+        ARGOCD_SERVER = 'ba19422ce41f.ngrok-free.app' // Updated with ngrok URL
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/prakashpotnuru11/Jenkins-Zero-To-Hero.git'
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+                    sh 'mvn clean install'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withCredentials([string(credentialsId: "${SONAR_TOKEN}", variable: 'SONAR_TOKEN')]) {
+                    dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+                        sh "mvn sonar:sonar -Dsonar.projectKey=spring-boot-app -Dsonar.host.url=http://43.205.228.54:9000 -Dsonar.login=$SONAR_TOKEN"
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh """
+                            docker build -t $DOCKER_USER/spring-boot-app:latest .
+                            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                            docker push $DOCKER_USER/spring-boot-app:latest
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Deploy via ArgoCD') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${ARGOCD_CREDENTIALS}", usernameVariable: 'ARGOCD_USER', passwordVariable: 'ARGOCD_PASS')]) {
+                    sh """
+                        argocd login $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PASS --insecure
+                        argocd app sync spring-boot-app
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Pipeline failed! Check logs.'
+        }
+    }
+}
