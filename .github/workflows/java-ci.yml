@@ -27,12 +27,11 @@ jobs:
     # ---------- SONARCLOUD STAGE ----------
     - name: SonarCloud Scan
       run: |
-        mvn sonar:sonar \
+        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
           -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-          -Dsonar.scanner.skipJreProvisioning=true
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
     # ---------- DOCKER STAGE ----------
     - name: Login to Docker Hub
