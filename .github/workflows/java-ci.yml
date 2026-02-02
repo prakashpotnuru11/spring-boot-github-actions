@@ -31,7 +31,7 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=prakashpotnuru11
             -Dsonar.projectKey=spring-boot-github-actions
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.login=46479feca973ebebd798da413b27e2ff4a725ae8
         run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar
 
       # 4. Login to Docker Hub
