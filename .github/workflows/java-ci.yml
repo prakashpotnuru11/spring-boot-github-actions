@@ -24,16 +24,15 @@ jobs:
           java-version: 21
           cache: maven
 
-      # 3. Build + SonarCloud Scan (HARD-FORCED, NO localhost possible)
+      # 3. Build + SonarCloud Scan (FINAL, GUARANTEED)
       - name: Build and SonarCloud Scan
         env:
-          MAVEN_OPTS: "-Dsonar.host.url=https://sonarcloud.io"
-        run: |
-          mvn clean verify \
-            org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-            -Dsonar.organization=prakashpotnuru11 \
+          MAVEN_OPTS: >
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.organization=prakashpotnuru11
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar
 
       # 4. Login to Docker Hub
       - name: Login to Docker Hub
