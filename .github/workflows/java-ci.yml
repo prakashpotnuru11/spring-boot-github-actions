@@ -30,7 +30,7 @@ jobs:
           MAVEN_OPTS: >
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=prakashpotnuru11
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.projectKey=spring-boot-github-actions
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar
 
