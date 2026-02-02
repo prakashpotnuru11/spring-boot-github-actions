@@ -32,7 +32,7 @@ jobs:
           mvn clean verify \
             org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar \
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+            -Dsonar.organization=prakashpotnuru11 \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       # 4. Login to Docker Hub
