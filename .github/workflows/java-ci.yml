@@ -24,13 +24,15 @@ jobs:
           java-version: 21
           cache: maven
 
-      # 3. Build + SonarCloud Scan (FINAL, GUARANTEED)
+      # 3. Build + SonarCloud Scan (FINAL, WORKING)
       - name: Build and SonarCloud Scan
         env:
           MAVEN_OPTS: >
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=prakashpotnuru11
-            -Dsonar.login=46479feca973ebebd798da413b27e2ff4a725ae8
+            -Dsonar.projectKey=spring-boot-github-actions
+            -Dsonar.branch.name=main
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar
 
       # 4. Login to Docker Hub
@@ -47,3 +49,4 @@ jobs:
       # 6. Push Docker image
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/spring-boot-app:latest
+
