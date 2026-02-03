@@ -32,6 +32,7 @@ jobs:
             -Dsonar.organization=prakashpotnuru11
             -Dsonar.projectKey=spring-boot-github-actions
             -Dsonar.branch.name=main
+            -Dsonar.branch.target=main
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar
 
