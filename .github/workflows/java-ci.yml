@@ -30,7 +30,7 @@ jobs:
           MAVEN_OPTS: >
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.organization=prakashpotnuru11
-            -Dsonar.projectKey=spring-boot-github-actions
+            -Dsonar.projectKey=prakashpotnuru11_spring-boot-github-actions
             -Dsonar.branch.name=main
             -Dsonar.branch.target=main
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
