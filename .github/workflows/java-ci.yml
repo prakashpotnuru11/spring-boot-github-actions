@@ -1,11 +1,14 @@
+
 name: Spring Boot CI with SonarCloud & Docker
 
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build:
@@ -15,6 +18,8 @@ jobs:
       # 1. Checkout source code
       - name: Checkout source code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # 2. Set up Java 21
       - name: Set up JDK 21
@@ -24,15 +29,15 @@ jobs:
           java-version: '21'
           cache: maven
 
-      # 3. Build + SonarCloud Scan
+      # 3. Build application and run SonarCloud analysis
       - name: Build and SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn clean verify sonar:sonar \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=prakashpotnuru11 \
-            -Dsonar.projectKey=prakashpotnuru11_spring-boot-github-actions \
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
             -Dsonar.token=${SONAR_TOKEN}
 
       # 4. Login to Docker Hub
@@ -44,8 +49,10 @@ jobs:
 
       # 5. Build Docker image
       - name: Build Docker Image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/spring-boot-app:latest .
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/spring-boot-app:latest .
 
-      # 6. Push Docker image
+      # 6. Push Docker image to Docker Hub
       - name: Push Docker Image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/spring-boot-app:latest
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/spring-boot-app:latest
