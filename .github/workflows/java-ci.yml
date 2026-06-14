@@ -52,7 +52,21 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/spring-boot-app:latest .
 
-      # 6. Push Docker image to Docker Hub
+      # 6. Push Docker image
       - name: Push Docker Image
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/spring-boot-app:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl rollout restart deployment/spring-boot-app -n springboot
+
+
